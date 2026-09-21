@@ -189,13 +189,13 @@ export function WebMobileSyncModal({ isOpen, onClose }) {
               <div className="p-3 bg-white rounded-2xl flex-shrink-0 shadow-md border border-neutral-200">
                 <svg viewBox="0 0 100 100" className="w-36 h-36">
                   {/* Position detection patterns */}
-                  <rect x="5" y="5" width="28" height="28" fill="#1C1C1C" rx="3" />
+                  <rect x="5" y="5" width="28" height="28" fill="#363535ff" rx="3" />
                   <rect x="9" y="9" width="20" height="20" fill="#FFFFFF" />
                   <rect x="13" y="13" width="12" height="12" fill="#F59E0B" />
 
                   <rect x="67" y="5" width="28" height="28" fill="#1C1C1C" rx="3" />
                   <rect x="71" y="9" width="20" height="20" fill="#FFFFFF" />
-                  <rect x="75" y="13" width="12" height="12" fill="#F59E0B" />
+                  <rect x="75" y="13" width="12" height="12" fill="#ffa200ff" />
 
                   <rect x="5" y="67" width="28" height="28" fill="#1C1C1C" rx="3" />
                   <rect x="9" y="71" width="20" height="20" fill="#FFFFFF" />
@@ -203,7 +203,7 @@ export function WebMobileSyncModal({ isOpen, onClose }) {
 
                   {/* QR Matrix Bits */}
                   <rect x="38" y="10" width="6" height="6" fill="#1C1C1C" />
-                  <rect x="48" y="10" width="6" height="6" fill="#1C1C1C" />
+                  <rect x="48" y="10" width="6" height="6" fill="#383737ff" />
                   <rect x="38" y="22" width="6" height="6" fill="#1C1C1C" />
                   <rect x="48" y="28" width="6" height="6" fill="#1C1C1C" />
                   <rect x="10" y="38" width="6" height="6" fill="#1C1C1C" />
