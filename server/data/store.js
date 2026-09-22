@@ -1501,8 +1501,26 @@ function getDb() {
       parsed.careerApplications = [];
       dirty = true;
     }
-    if (!parsed.tenderSubmissions) {
-      parsed.tenderSubmissions = [];
+    if (!parsed.products || parsed.products.length === 0) {
+      parsed.products = [];
+      dirty = true;
+    }
+    if (!parsed.productOrders) {
+      parsed.productOrders = [];
+      dirty = true;
+    }
+    if (!parsed.adminProfile) {
+      parsed.adminProfile = {
+        name: "A. Charan Patel",
+        title: "Founder & Managing Director",
+        email: "admin@amkinfra.com",
+        phone: "9032477292",
+        avatar: "/assets/logo.png",
+        officeAddress: "Opp. Collectorate Office, Subedari, Hanamkonda, Warangal, Telangana - 506001",
+        bio: "Leading AMK INFRA with 12+ years of engineering rigor across 7 specialized corporate divisions. Committed to on-time milestone delivery, Class-I standards, and client trust.",
+        role: "Super Admin",
+        lastActive: "Just now"
+      };
       dirty = true;
     }
 

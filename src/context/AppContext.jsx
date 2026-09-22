@@ -34,6 +34,7 @@ export function AppProvider({ children }) {
   const [selectedJobForApplication, setSelectedJobForApplication] = useState(null);
   const [staffIntranetModalOpen, setStaffIntranetModalOpen] = useState(false);
   const [searchTrackingCode, setSearchTrackingCode] = useState(initialParams.code || '');
+  const [selectedStoreCategory, setSelectedStoreCategory] = useState('all');
 
   // Language state (en = English, te = Telugu, hi = Hindi)
   const [lang, setLang] = useState(() => {
@@ -179,6 +180,9 @@ export function AppProvider({ children }) {
 
   const navigateTo = (tab, options = {}) => {
     setActiveTab(tab);
+    if (options.category) {
+      setSelectedStoreCategory(options.category);
+    }
     if (options.serviceId) {
       setSelectedServiceId(options.serviceId);
     }
@@ -246,8 +250,136 @@ export function AppProvider({ children }) {
     setStaffIntranetModalOpen(true);
   };
 
-  const closeStaffIntranet = () => {
-    setStaffIntranetModalOpen(false);
+  // Cart state for Construction Materials, Pipelines, Tiles, Taps, etc.
+  const [cart, setCart] = useState(() => {
+    try {
+      const saved = localStorage.getItem('amk_cart');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
+  const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
+  const [selectedProductForQuickBuy, setSelectedProductForQuickBuy] = useState(null);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('amk_cart', JSON.stringify(cart));
+    } catch (e) {
+      console.error(e);
+    }
+  }, [cart]);
+
+  const addToCart = (product, quantity = 1) => {
+    const qty = Number(quantity) || 1;
+    setCart(prev => {
+      const existing = prev.find(item => item.id === product.id);
+      if (existing) {
+        return prev.map(item =>
+          item.id === product.id ? { ...item, quantity: item.quantity + qty } : item
+        );
+      } else {
+        return [
+          ...prev,
+          {
+            id: product.id,
+            sku: product.sku,
+            name: product.name,
+            category: product.category,
+            price: product.price,
+            unit: product.unit,
+            image: product.image,
+            brand: product.brand,
+            quantity: qty
+          }
+        ];
+      }
+    });
+    showToast('Added to Cart', `${qty}x ${product.name.slice(0, 32)} added.`, 'success');
+  };
+
+  const removeFromCart = (productId) => {
+    setCart(prev => prev.filter(item => item.id !== productId));
+    showToast('Item Removed', 'Item removed from your cart.', 'info');
+  };
+
+  const updateCartQty = (productId, newQty) => {
+    const q = Number(newQty);
+    if (q <= 0) {
+      removeFromCart(productId);
+    } else {
+      setCart(prev => prev.map(item => item.id === productId ? { ...item, quantity: q } : item));
+    }
+  };
+
+  const clearCart = () => {
+    setCart([]);
+  };
+
+  const cartCount = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+  const cartTotal = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
+
+  // Admin Profile state & synchronization
+  const [adminProfile, setAdminProfile] = useState(() => {
+    try {
+      const saved = localStorage.getItem('amk_admin_profile');
+      return saved ? JSON.parse(saved) : {
+        name: "A. Charan Patel",
+        title: "Founder & Managing Director",
+        email: "admin@amkinfra.com",
+        phone: "9032477292",
+        avatar: "/assets/logo.png",
+        officeAddress: "Opp. Collectorate Office, Subedari, Hanamkonda, Warangal, Telangana - 506001",
+        bio: "Leading AMK INFRA with 12+ years of engineering rigor across 7 specialized corporate divisions. Committed to on-time milestone delivery, Class-I standards, and client trust.",
+        role: "Super Admin",
+        lastActive: "Just now"
+      };
+    } catch {
+      return {
+        name: "A. Charan Patel",
+        title: "Founder & Managing Director",
+        email: "admin@amkinfra.com",
+        phone: "9032477292",
+        avatar: "/assets/logo.png",
+        officeAddress: "Opp. Collectorate Office, Subedari, Hanamkonda, Warangal, Telangana - 506001",
+        bio: "Leading AMK INFRA with 12+ years of engineering rigor across 7 specialized corporate divisions. Committed to on-time milestone delivery, Class-I standards, and client trust.",
+        role: "Super Admin",
+        lastActive: "Just now"
+      };
+    }
+  });
+
+  const updateAdminProfile = async (updatedFields) => {
+    const updated = { ...adminProfile, ...updatedFields };
+    setAdminProfile(updated);
+    try {
+      localStorage.setItem('amk_admin_profile', JSON.stringify(updated));
+    } catch (e) {
+      console.error(e);
+    }
+
+    // Sync adminUser if logged in
+    if (adminUser) {
+      const newAdminUser = {
+        ...adminUser,
+        name: updated.name,
+        role: updated.title || updated.role || adminUser.role,
+        photo: updated.avatar
+      };
+      setAdminUser(newAdminUser);
+      localStorage.setItem('amk_admin_user', JSON.stringify(newAdminUser));
+    }
+
+    // Call backend API to persist
+    try {
+      await api.updateAdminProfile(updated);
+    } catch (err) {
+      console.error('Failed to sync admin profile with backend:', err);
+    }
+
+    showToast('Admin Profile Updated', `Profile for ${updated.name} saved successfully!`, 'success');
   };
 
   const unreadCount = (notifications || []).filter(n => !n.read).length;
@@ -293,6 +425,8 @@ export function AppProvider({ children }) {
         adminUser,
         loginAdmin: handleAdminLogin,
         logoutAdmin: handleAdminLogout,
+        adminProfile,
+        updateAdminProfile,
         customerUser,
         loginCustomer: handleCustomerLogin,
         logoutCustomer: handleCustomerLogout,
@@ -306,7 +440,23 @@ export function AppProvider({ children }) {
         company,
         services,
         divisions,
-        loading
+        loading,
+        // Cart & Store
+        selectedStoreCategory,
+        setSelectedStoreCategory,
+        cart,
+        addToCart,
+        removeFromCart,
+        updateCartQty,
+        clearCart,
+        cartCount,
+        cartTotal,
+        cartDrawerOpen,
+        setCartDrawerOpen,
+        checkoutModalOpen,
+        setCheckoutModalOpen,
+        selectedProductForQuickBuy,
+        setSelectedProductForQuickBuy
       }}
     >
       {children}

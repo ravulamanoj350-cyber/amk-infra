@@ -265,6 +265,81 @@ export const api = {
   async getPanoramas() {
     const res = await fetch(`${BASE_URL}/panoramas`);
     return res.json();
+  },
+
+  // Products & Pipeline Materials Store
+  async getProducts(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    const res = await fetch(`${BASE_URL}/products${query ? `?${query}` : ''}`);
+    return res.json();
+  },
+
+  async getProductById(id) {
+    const res = await fetch(`${BASE_URL}/products/${id}`);
+    return res.json();
+  },
+
+  async createProductOrder(payload) {
+    const res = await fetch(`${BASE_URL}/products/order`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    return res.json();
+  },
+
+  async getProductOrders() {
+    const res = await fetch(`${BASE_URL}/products/orders`);
+    return res.json();
+  },
+
+  async updateProductOrderStatus(id, payload) {
+    const res = await fetch(`${BASE_URL}/products/orders/${id}/status`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    return res.json();
+  },
+
+  async createProduct(payload) {
+    const res = await fetch(`${BASE_URL}/products`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    return res.json();
+  },
+
+  async updateProduct(id, payload) {
+    const res = await fetch(`${BASE_URL}/products/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    return res.json();
+  },
+
+  async deleteProduct(id) {
+    const res = await fetch(`${BASE_URL}/products/${id}`, {
+      method: 'DELETE'
+    });
+    return res.json();
+  },
+
+  // Admin Profile Management
+  async getAdminProfile() {
+    const res = await fetch(`${BASE_URL}/admin/profile`);
+    return res.json();
+  },
+
+  async updateAdminProfile(payload) {
+    const res = await fetch(`${BASE_URL}/admin/profile`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    return res.json();
   }
 };
 

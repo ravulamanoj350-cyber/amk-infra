@@ -931,12 +931,347 @@ app.get('/api/project-timelapses', (req, res) => {
   });
 });
 
-app.get('/api/panoramas', (req, res) => {
+// ==========================================
+// 12. Construction Materials & Pipelines Store Endpoints
+// ==========================================
+app.get('/api/products', (req, res) => {
   const data = db.get();
+  let list = data.products || [];
+  const { category, division, search, featured, inStock, sort } = req.query;
+
+  if (category && category !== 'all') {
+    list = list.filter(p => p.category.toLowerCase() === category.toLowerCase());
+  }
+  if (division && division !== 'all') {
+    list = list.filter(p => p.divisionId === division || (p.divisionName && p.divisionName.toLowerCase().includes(division.toLowerCase())));
+  }
+  if (featured === 'true') {
+    list = list.filter(p => p.featured);
+  }
+  if (inStock === 'true') {
+    list = list.filter(p => p.inStock > 0);
+  }
+  if (search) {
+    const s = search.toLowerCase();
+    list = list.filter(p =>
+      p.name.toLowerCase().includes(s) ||
+      p.brand.toLowerCase().includes(s) ||
+      p.categoryLabel.toLowerCase().includes(s) ||
+      (p.description && p.description.toLowerCase().includes(s)) ||
+      (p.sku && p.sku.toLowerCase().includes(s))
+    );
+  }
+
+  // Sorting
+  if (sort === 'price-asc') {
+    list.sort((a, b) => a.price - b.price);
+  } else if (sort === 'price-desc') {
+    list.sort((a, b) => b.price - a.price);
+  } else if (sort === 'rating') {
+    list.sort((a, b) => b.rating - a.rating);
+  } else if (sort === 'popular') {
+    list.sort((a, b) => (b.reviewsCount || 0) - (a.reviewsCount || 0));
+  }
+
   res.json({
     success: true,
-    count: (data.panoramas || []).length,
-    data: data.panoramas || []
+    count: list.length,
+    data: list
+  });
+});
+
+app.get('/api/products/:id', (req, res) => {
+  const data = db.get();
+  const list = data.products || [];
+  const product = list.find(p => p.id === req.params.id || p.sku === req.params.id);
+  if (!product) {
+    return res.status(404).json({ success: false, message: 'Product not found with id: ' + req.params.id });
+  }
+  res.json({ success: true, data: product });
+});
+
+// Client Order Placement (Pipelines, Taps, Tiles, Cardboards, etc.)
+app.post('/api/products/order', (req, res) => {
+  const {
+    customerName,
+    phone,
+    email,
+    siteAddress,
+    items,
+    notes,
+    paymentMethod,
+    deliverySlot,
+    couponApplied
+  } = req.body;
+
+  if (!customerName || !phone || !siteAddress || !items || !Array.isArray(items) || items.length === 0) {
+    return res.status(400).json({
+      success: false,
+      message: 'Please provide customer name, phone, delivery site address, and at least one item.'
+    });
+  }
+
+  const data = db.get();
+  const orderId = `AMK-MAT-${Math.floor(1000 + Math.random() * 9000)}`;
+
+  let itemsTotal = 0;
+  const processedItems = items.map(item => {
+    const p = (data.products || []).find(prod => prod.id === item.productId || prod.id === item.id);
+    const price = p ? p.price : (item.price || 0);
+    const qty = item.quantity || 1;
+    const subtotal = price * qty;
+    itemsTotal += subtotal;
+
+    // Deduct stock if available
+    if (p && p.inStock) {
+      p.inStock = Math.max(0, p.inStock - qty);
+    }
+
+    return {
+      productId: item.productId || item.id,
+      name: item.name || (p ? p.name : 'Construction Item'),
+      price,
+      unit: item.unit || (p ? p.unit : 'unit'),
+      quantity: qty,
+      subtotal,
+      image: item.image || (p ? p.image : '')
+    };
+  });
+
+  const gstAmount = Math.round(itemsTotal * 0.18);
+  const discountRate = couponApplied === 'AMKBUILD10' ? 0.10 : (couponApplied === 'AMKVIP' ? 0.15 : 0);
+  const discountAmount = Math.round(itemsTotal * discountRate);
+  const deliveryFee = itemsTotal > 5000 ? 0 : 450;
+  const finalTotal = itemsTotal + gstAmount + deliveryFee - discountAmount;
+
+  const newOrder = {
+    id: orderId,
+    customerName,
+    phone,
+    email: email || '',
+    siteAddress,
+    items: processedItems,
+    itemsTotal,
+    gstAmount,
+    deliveryFee,
+    discountAmount,
+    finalTotal,
+    couponApplied: couponApplied || '',
+    paymentMethod: paymentMethod || 'Pay on Site Delivery (COD)',
+    paymentStatus: paymentMethod === 'Online UPI' || paymentMethod === 'NEFT / RTGS' ? 'Payment Verified' : 'Pending on Delivery',
+    orderStatus: 'Confirmed',
+    dispatchDate: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+    deliverySlot: deliverySlot || 'Express 24h Site Delivery',
+    assignedDriver: 'AMK Logistics Fleet (Hanamkonda Central Warehouse)',
+    notes: notes || '',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+
+  data.productOrders = data.productOrders || [];
+  data.productOrders.unshift(newOrder);
+
+  // Also bridge into inquiries list so Tracker and Inquiries panel can show it
+  data.inquiries = data.inquiries || [];
+  data.inquiries.unshift({
+    id: orderId,
+    customerName,
+    phone,
+    email: email || '',
+    serviceCategory: 'materials-procurement',
+    serviceTitle: `Material Order (${processedItems.length} Items: ${processedItems[0].name.slice(0, 30)}...)`,
+    divisionId: 'civil-commercial',
+    divisionName: 'Materials & Pipeline Procurement Hub',
+    location: siteAddress,
+    propertyType: 'Site Delivery',
+    timeline: deliverySlot || 'Express 24h',
+    budget: `₹${finalTotal.toLocaleString('en-IN')}`,
+    requirements: `Order #${orderId} with ${processedItems.length} items. Total: ₹${finalTotal.toLocaleString('en-IN')}. Site: ${siteAddress}`,
+    status: 'In Progress',
+    assignedEngineer: 'Logistics Desk (Er. Sandeep Goud)',
+    quoteAmount: `₹${finalTotal.toLocaleString('en-IN')}`,
+    notes: `Materials Order: ${paymentMethod}. Delivery Slot: ${deliverySlot}`,
+    statusUpdates: [
+      {
+        status: 'Order Confirmed',
+        timestamp: new Date().toISOString(),
+        note: `Materials purchase order verified. Total: ₹${finalTotal.toLocaleString('en-IN')}. Assigned to Central Logistics Warehouse.`
+      }
+    ],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  });
+
+  db.save(data);
+
+  res.status(201).json({
+    success: true,
+    message: 'Material and pipeline order successfully booked!',
+    data: newOrder
+  });
+});
+
+app.get('/api/products/orders', (req, res) => {
+  const data = db.get();
+  const list = data.productOrders || [];
+  res.json({
+    success: true,
+    count: list.length,
+    data: list
+  });
+});
+
+app.patch('/api/products/orders/:id/status', (req, res) => {
+  const { status, note, assignedDriver } = req.body;
+  const data = db.get();
+  data.productOrders = data.productOrders || [];
+  const order = data.productOrders.find(o => o.id.toUpperCase() === req.params.id.toUpperCase());
+  if (!order) {
+    return res.status(404).json({ success: false, message: 'Order not found: ' + req.params.id });
+  }
+
+  if (status) order.orderStatus = status;
+  if (assignedDriver) order.assignedDriver = assignedDriver;
+  order.updatedAt = new Date().toISOString();
+
+  // Sync to inquiry status
+  if (data.inquiries) {
+    const inq = data.inquiries.find(i => i.id.toUpperCase() === req.params.id.toUpperCase());
+    if (inq) {
+      if (status === 'Delivered') inq.status = 'Completed';
+      else if (status === 'Cancelled') inq.status = 'Cancelled';
+      else inq.status = 'In Progress';
+      inq.updatedAt = new Date().toISOString();
+      inq.statusUpdates = inq.statusUpdates || [];
+      inq.statusUpdates.unshift({
+        status: status || inq.status,
+        timestamp: new Date().toISOString(),
+        note: note || `Order status updated to ${status}`
+      });
+    }
+  }
+
+  db.save(data);
+  res.json({ success: true, message: 'Order status updated successfully', data: order });
+});
+
+// Admin product CRUD
+app.post('/api/products', (req, res) => {
+  const productData = req.body;
+  if (!productData.name || !productData.price) {
+    return res.status(400).json({ success: false, message: 'Product name and price are required.' });
+  }
+  const data = db.get();
+  const newProduct = {
+    id: `PROD-${Date.now()}`,
+    sku: productData.sku || `SKU-${Math.floor(1000 + Math.random() * 9000)}`,
+    name: productData.name,
+    category: productData.category || 'structural',
+    categoryLabel: productData.categoryLabel || 'Structural Materials',
+    divisionId: productData.divisionId || 'civil-commercial',
+    divisionName: productData.divisionName || 'Civil Infrastructure',
+    brand: productData.brand || 'AMK Certified',
+    price: Number(productData.price),
+    unit: productData.unit || 'unit',
+    originalPrice: productData.originalPrice ? Number(productData.originalPrice) : Math.round(Number(productData.price) * 1.15),
+    rating: productData.rating || 4.9,
+    reviewsCount: productData.reviewsCount || 10,
+    inStock: Number(productData.inStock) || 100,
+    minOrderQty: Number(productData.minOrderQty) || 1,
+    featured: !!productData.featured,
+    badge: productData.badge || 'Verified Stock',
+    badgeColor: productData.badgeColor || 'amber',
+    image: productData.image || 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80',
+    description: productData.description || '',
+    specifications: productData.specifications || [],
+    contractorDiscount: productData.contractorDiscount || 'Bulk contractor pricing available'
+  };
+
+  data.products = data.products || [];
+  data.products.unshift(newProduct);
+  db.save(data);
+
+  res.status(201).json({ success: true, message: 'New material product added successfully', data: newProduct });
+});
+
+app.put('/api/products/:id', (req, res) => {
+  const data = db.get();
+  data.products = data.products || [];
+  const idx = data.products.findIndex(p => p.id === req.params.id);
+  if (idx === -1) {
+    return res.status(404).json({ success: false, message: 'Product not found' });
+  }
+  data.products[idx] = { ...data.products[idx], ...req.body };
+  db.save(data);
+  res.json({ success: true, message: 'Product updated successfully', data: data.products[idx] });
+});
+
+app.delete('/api/products/:id', (req, res) => {
+  const data = db.get();
+  data.products = data.products || [];
+  const initialLen = data.products.length;
+  data.products = data.products.filter(p => p.id !== req.params.id);
+  if (data.products.length === initialLen) {
+    return res.status(404).json({ success: false, message: 'Product not found' });
+  }
+  db.save(data);
+  res.json({ success: true, message: 'Product deleted successfully' });
+});
+
+// ==========================================
+// 13. Admin Profile Management Endpoints
+// ==========================================
+app.get('/api/admin/profile', (req, res) => {
+  const data = db.get();
+  const profile = data.adminProfile || {
+    name: "A. Charan Patel",
+    title: "Founder & Managing Director",
+    email: "admin@amkinfra.com",
+    phone: "9032477292",
+    avatar: "/assets/logo.png",
+    officeAddress: "Opp. Collectorate Office, Subedari, Hanamkonda, Warangal, Telangana - 506001",
+    bio: "Leading AMK INFRA with 12+ years of engineering rigor across 7 specialized corporate divisions. Committed to on-time milestone delivery, Class-I standards, and client trust.",
+    role: "Super Admin",
+    lastActive: "Just now"
+  };
+  res.json({ success: true, data: profile });
+});
+
+app.put('/api/admin/profile', (req, res) => {
+  const { name, title, email, phone, avatar, officeAddress, bio, role } = req.body;
+  const data = db.get();
+
+  data.adminProfile = {
+    ...(data.adminProfile || {}),
+    name: name || data.adminProfile?.name || 'A. Charan Patel',
+    title: title || data.adminProfile?.title || 'Founder & Managing Director',
+    email: email || data.adminProfile?.email || 'admin@amkinfra.com',
+    phone: phone || data.adminProfile?.phone || '9032477292',
+    avatar: avatar || data.adminProfile?.avatar || '/assets/logo.png',
+    officeAddress: officeAddress || data.adminProfile?.officeAddress || 'Subedari, Hanamkonda, Warangal',
+    bio: bio || data.adminProfile?.bio || '',
+    role: role || data.adminProfile?.role || 'Super Admin',
+    updatedAt: new Date().toISOString()
+  };
+
+  // Synchronize with company founder info
+  if (data.company) {
+    if (name) data.company.founder = name;
+    if (title) data.company.founderTitle = title;
+    if (phone) {
+      data.company.phone = phone.replace(/[^0-9]/g, '');
+      data.company.displayPhone = `+91 ${data.company.phone}`;
+    }
+    if (email) data.company.email = email;
+    data.company.adminProfile = data.adminProfile;
+  }
+
+  db.save(data);
+
+  res.json({
+    success: true,
+    message: 'Admin profile updated successfully across AMK INFRA systems.',
+    data: data.adminProfile
   });
 });
 

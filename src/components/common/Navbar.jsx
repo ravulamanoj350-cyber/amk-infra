@@ -26,7 +26,8 @@ import {
   FileText,
   ShieldCheck,
   ClipboardList,
-  Globe
+  Globe,
+  ShoppingBag
 } from 'lucide-react';
 
 export function Navbar({ onOpenNotifications }) {
@@ -39,6 +40,9 @@ export function Navbar({ onOpenNotifications }) {
     setWebMobileSyncModalOpen,
     openJobApplication,
     openStaffIntranet,
+    cart,
+    cartCount,
+    setCartDrawerOpen,
     adminUser,
     customerUser,
     unreadCount,
@@ -56,6 +60,7 @@ export function Navbar({ onOpenNotifications }) {
     { id: 'home', label: t('nav_home', 'Home') },
     { id: 'divisions', label: t('nav_divisions', 'Divisions'), hasDivisionsDropdown: true },
     { id: 'services', label: t('nav_services', 'Services') },
+    { id: 'store', label: t('nav_store', 'Store / Materials'), badge: 'Buy Now', isStore: true },
     { id: 'safety-quality', label: t('nav_safety_qa', 'Safety & QA') },
     { id: 'careers', label: t('nav_careers', 'Careers'), hasCareersDropdown: true, badge: t('hiring_badge', 'Hiring') },
     { id: 'request', label: t('nav_request', 'Request Service'), highlight: true },
@@ -165,16 +170,17 @@ export function Navbar({ onOpenNotifications }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             
-            {/* Corporate Logo */}
+            {/* Corporate Logo with Official Emblem */}
             <div
               onClick={() => handleLinkClick('home')}
               className="flex items-center gap-3 cursor-pointer group select-none"
             >
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#F59E0B] via-[#D97706] to-[#B45309] flex items-center justify-center shadow-md group-hover:scale-105 transition-transform duration-300">
-                <div className="relative flex items-center justify-center">
-                  <Building2 className="w-6 h-6 text-[#1C1C1C] stroke-[2.5]" />
-                  <div className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-white animate-pulse" />
-                </div>
+              <div className="w-14 h-14 rounded-2xl bg-white p-1 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-300 border border-amber-500/50 overflow-hidden shrink-0">
+                <img
+                  src="/assets/logo.png"
+                  alt="AMK INFRA Logo"
+                  className="w-full h-full object-contain"
+                />
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
@@ -349,6 +355,21 @@ export function Navbar({ onOpenNotifications }) {
             {/* Right Quick Action Tools */}
             <div className="hidden sm:flex items-center gap-2">
               
+              {/* Materials & Supplies Cart Button */}
+              <button
+                onClick={() => setCartDrawerOpen(true)}
+                className="relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/15 hover:bg-[#F59E0B] hover:text-[#1C1C1C] text-[#F59E0B] text-xs font-bold border border-amber-500/40 transition-all shadow-sm group"
+                title="View Materials & Supplies Cart"
+              >
+                <ShoppingBag className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
+                <span>{t('nav_cart', 'Cart')}</span>
+                {cartCount > 0 && (
+                  <span className="px-1.5 py-0.2 bg-red-600 text-white text-[10px] font-black rounded-full shadow animate-pulse">
+                    {cartCount}
+                  </span>
+                )}
+              </button>
+
               {/* Cost Estimator */}
               <button
                 onClick={() => setEstimatorModalOpen(true)}
@@ -390,6 +411,19 @@ export function Navbar({ onOpenNotifications }) {
 
             {/* Mobile / Tablet Menu Hamburger */}
             <div className="flex xl:hidden items-center gap-2">
+              <button
+                onClick={() => setCartDrawerOpen(true)}
+                className="relative p-2 rounded-lg bg-[#262626] text-[#F59E0B] border border-neutral-700"
+                title="Materials Cart"
+              >
+                <ShoppingBag className="w-4 h-4" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
+              </button>
+
               <button
                 onClick={() => setWebMobileSyncModalOpen(true)}
                 className="p-2 rounded-lg bg-[#262626] text-[#F59E0B] border border-neutral-700"

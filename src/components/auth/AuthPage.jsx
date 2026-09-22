@@ -297,15 +297,19 @@ export function AuthPage() {
             {/* Top Logo & Portal Switcher */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-4 border-b border-neutral-200">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-[#F59E0B] flex items-center justify-center text-[#1C1C1C] font-bold shadow-sm">
-                  <Building2 className="w-6 h-6 stroke-[2.5]" />
+                <div className="w-12 h-12 rounded-2xl bg-white p-0.5 flex items-center justify-center border border-amber-500/50 shadow-md overflow-hidden shrink-0">
+                  <img
+                    src="/assets/logo.png"
+                    alt="AMK INFRA Emblem"
+                    className="w-full h-full object-contain"
+                  />
                 </div>
                 <div>
                   <h2 className="font-display font-black text-xl text-[#1C1C1C]">
                     AMK <span className="text-[#D97706]">INFRA</span>
                   </h2>
                   <p className="text-[10px] text-[#737373] font-semibold tracking-wider uppercase">
-                    Login & Sign In Portal
+                    Client &amp; Staff Secure Portal
                   </p>
                 </div>
               </div>

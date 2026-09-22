@@ -13,6 +13,7 @@ import { StaffIntranetModal } from './components/staff/StaffIntranetModal';
 // Pages & Sections
 import { HeroSection } from './components/home/HeroSection';
 import { DivisionsSection } from './components/home/DivisionsSection';
+import { StoreShowcaseSection } from './components/home/StoreShowcaseSection';
 import { ServicesGrid } from './components/home/ServicesGrid';
 import { WhyChooseUsSection } from './components/home/WhyChooseUsSection';
 import { BeforeAfterShowcase } from './components/home/BeforeAfterShowcase';
@@ -23,6 +24,9 @@ import { CtaBanner } from './components/home/CtaBanner';
 
 import { DivisionsPage } from './components/divisions/DivisionsPage';
 import { ServicesPage } from './components/services/ServicesPage';
+import { StorePage } from './components/store/StorePage';
+import { CartDrawer } from './components/store/CartDrawer';
+import { CheckoutModal } from './components/store/CheckoutModal';
 import { RequestServiceWizard } from './components/request/RequestServiceWizard';
 import { PortfolioPage } from './components/portfolio/PortfolioPage';
 import { TrackStatusPage } from './components/tracker/TrackStatusPage';
@@ -46,7 +50,11 @@ function MainLayout() {
     estimatorModalOpen,
     setEstimatorModalOpen,
     webMobileSyncModalOpen,
-    setWebMobileSyncModalOpen
+    setWebMobileSyncModalOpen,
+    cartDrawerOpen,
+    setCartDrawerOpen,
+    checkoutModalOpen,
+    setCheckoutModalOpen
   } = useApp();
 
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -59,6 +67,7 @@ function MainLayout() {
           <>
             <HeroSection />
             <DivisionsSection />
+            <StoreShowcaseSection />
             <ServicesGrid />
             <WhyChooseUsSection />
             <BeforeAfterShowcase />
@@ -68,6 +77,8 @@ function MainLayout() {
             <CtaBanner />
           </>
         );
+      case 'store':
+        return <StorePage />;
       case 'divisions':
         return <DivisionsPage />;
       case 'services':
@@ -99,6 +110,7 @@ function MainLayout() {
           <>
             <HeroSection />
             <DivisionsSection />
+            <StoreShowcaseSection />
             <ServicesGrid />
             <WhyChooseUsSection />
             <BeforeAfterShowcase />
@@ -137,6 +149,15 @@ function MainLayout() {
             />
             <JobApplicationModal />
             <StaffIntranetModal />
+            <CartDrawer
+              isOpen={cartDrawerOpen}
+              onClose={() => setCartDrawerOpen(false)}
+              onOpenCheckout={() => setCheckoutModalOpen(true)}
+            />
+            <CheckoutModal
+              isOpen={checkoutModalOpen}
+              onClose={() => setCheckoutModalOpen(false)}
+            />
             <NotificationDrawer
               isOpen={notificationsOpen}
               onClose={() => setNotificationsOpen(false)}
@@ -184,6 +205,15 @@ function MainLayout() {
       />
       <JobApplicationModal />
       <StaffIntranetModal />
+      <CartDrawer
+        isOpen={cartDrawerOpen}
+        onClose={() => setCartDrawerOpen(false)}
+        onOpenCheckout={() => setCheckoutModalOpen(true)}
+      />
+      <CheckoutModal
+        isOpen={checkoutModalOpen}
+        onClose={() => setCheckoutModalOpen(false)}
+      />
       <NotificationDrawer
         isOpen={notificationsOpen}
         onClose={() => setNotificationsOpen(false)}

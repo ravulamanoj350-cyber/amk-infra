@@ -86,8 +86,12 @@ export function Footer() {
           {/* Col 1: About & Founder */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#F59E0B] via-[#D97706] to-[#B45309] flex items-center justify-center text-[#1C1C1C] font-black shadow-md">
-                <Building2 className="w-6 h-6 stroke-[2.5]" />
+              <div className="w-12 h-12 rounded-2xl bg-white p-1 flex items-center justify-center shadow-lg border border-amber-500/50 overflow-hidden shrink-0">
+                <img
+                  src="/assets/logo.png"
+                  alt="AMK INFRA Emblem"
+                  className="w-full h-full object-contain"
+                />
               </div>
               <div>
                 <span className="font-display font-extrabold text-2xl text-white tracking-wide">
@@ -160,6 +164,12 @@ export function Footer() {
               Clients & Careers
             </h3>
             <ul className="space-y-2.5 text-xs text-[#A8A8A2]">
+              <li>
+                <button onClick={() => navigateTo('store')} className="text-[#F59E0B] font-bold hover:underline transition-colors flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#F59E0B] animate-pulse"></span>
+                  <span>Materials &amp; Pipeline Store (Buy Online)</span>
+                </button>
+              </li>
               <li>
                 <button onClick={() => navigateTo('divisions')} className="text-white font-bold hover:text-[#F59E0B] transition-colors flex items-center gap-1.5">
                   <Layers className="w-3.5 h-3.5 text-[#F59E0B]" />

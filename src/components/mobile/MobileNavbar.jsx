@@ -1,26 +1,30 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
-import { Building2, Bell, Phone, Shield, Smartphone, Layers, QrCode } from 'lucide-react';
+import { Building2, Bell, Phone, Shield, Smartphone, Layers, QrCode, ShoppingBag } from 'lucide-react';
 
 export function MobileNavbar({ onOpenNotifications }) {
-  const { navigateTo, unreadCount, setMobileMode, setWebMobileSyncModalOpen, activeTab } = useApp();
+  const { navigateTo, unreadCount, setMobileMode, setWebMobileSyncModalOpen, activeTab, cartCount, setCartDrawerOpen } = useApp();
 
   return (
     <div className="sticky top-0 z-40 bg-[#181818] backdrop-blur-md border-b border-neutral-800 px-3.5 py-2.5 flex items-center justify-between shadow-lg">
       {/* Brand logo */}
       <div
         onClick={() => navigateTo('home')}
-        className="flex items-center gap-2 cursor-pointer"
+        className="flex items-center gap-2.5 cursor-pointer select-none"
       >
-        <div className="w-8 h-8 rounded-lg bg-[#F59E0B] text-[#1C1C1C] flex items-center justify-center font-black shadow-sm">
-          <Building2 className="w-4 h-4 stroke-[2.5]" />
+        <div className="w-9 h-9 rounded-xl bg-white p-0.5 flex items-center justify-center shadow-md border border-amber-500/50 overflow-hidden shrink-0">
+          <img
+            src="/assets/logo.png"
+            alt="AMK INFRA Logo"
+            className="w-full h-full object-contain"
+          />
         </div>
         <div>
           <span className="font-display font-black text-sm text-white tracking-wider">
             AMK <span className="text-[#F59E0B]">INFRA</span>
           </span>
           <span className="text-[9px] text-neutral-400 block -mt-0.5 font-mono">
-            7 Divisions • Warangal
+            7 Wings • Telangana
           </span>
         </div>
       </div>
@@ -28,16 +32,28 @@ export function MobileNavbar({ onOpenNotifications }) {
       {/* Right tools */}
       <div className="flex items-center gap-1.5">
         <button
-          onClick={() => navigateTo('divisions')}
+          onClick={() => setCartDrawerOpen(true)}
+          className="relative p-1.5 rounded-lg bg-[#242424] text-[#F59E0B] border border-neutral-700"
+          title="Materials Cart"
+        >
+          <ShoppingBag className="w-3.5 h-3.5" />
+          {cartCount > 0 && (
+            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-500 text-white text-[8px] font-bold rounded-full flex items-center justify-center">
+              {cartCount}
+            </span>
+          )}
+        </button>
+
+        <button
+          onClick={() => navigateTo('store')}
           className={`px-2 py-1 rounded-lg text-[10px] font-bold border transition-colors flex items-center gap-1 ${
-            activeTab === 'divisions'
+            activeTab === 'store'
               ? 'bg-[#F59E0B] text-[#1C1C1C] border-[#F59E0B]'
               : 'bg-[#242424] text-neutral-300 border-neutral-700'
           }`}
-          title="Divisions"
+          title="Store"
         >
-          <Layers className="w-3 h-3" />
-          <span>Wings</span>
+          <span>Store</span>
         </button>
 
         <a
