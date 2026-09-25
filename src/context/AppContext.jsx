@@ -250,6 +250,10 @@ export function AppProvider({ children }) {
     setStaffIntranetModalOpen(true);
   };
 
+  const closeStaffIntranet = () => {
+    setStaffIntranetModalOpen(false);
+  };
+
   // Cart state for Construction Materials, Pipelines, Tiles, Taps, etc.
   const [cart, setCart] = useState(() => {
     try {
