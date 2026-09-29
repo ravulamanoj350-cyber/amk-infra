@@ -931,6 +931,15 @@ app.get('/api/project-timelapses', (req, res) => {
   });
 });
 
+app.get('/api/panoramas', (req, res) => {
+  const data = db.get();
+  res.json({
+    success: true,
+    count: (data.panoramas || []).length,
+    data: data.panoramas || []
+  });
+});
+
 // ==========================================
 // 12. Construction Materials & Pipelines Store Endpoints
 // ==========================================
@@ -978,16 +987,6 @@ app.get('/api/products', (req, res) => {
     count: list.length,
     data: list
   });
-});
-
-app.get('/api/products/:id', (req, res) => {
-  const data = db.get();
-  const list = data.products || [];
-  const product = list.find(p => p.id === req.params.id || p.sku === req.params.id);
-  if (!product) {
-    return res.status(404).json({ success: false, message: 'Product not found with id: ' + req.params.id });
-  }
-  res.json({ success: true, data: product });
 });
 
 // Client Order Placement (Pipelines, Taps, Tiles, Cardboards, etc.)
@@ -1153,6 +1152,16 @@ app.patch('/api/products/orders/:id/status', (req, res) => {
 
   db.save(data);
   res.json({ success: true, message: 'Order status updated successfully', data: order });
+});
+
+app.get('/api/products/:id', (req, res) => {
+  const data = db.get();
+  const list = data.products || [];
+  const product = list.find(p => p.id === req.params.id || p.sku === req.params.id);
+  if (!product) {
+    return res.status(404).json({ success: false, message: 'Product not found with id: ' + req.params.id });
+  }
+  res.json({ success: true, data: product });
 });
 
 // Admin product CRUD
