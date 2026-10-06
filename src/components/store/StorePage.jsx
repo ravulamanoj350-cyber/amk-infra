@@ -33,53 +33,43 @@ import {
 } from 'lucide-react';
 
 const CATEGORIES = [
-  { id: 'all', label: 'All Supplies', icon: Layers, countLabel: '47 Items' },
-  { id: 'pipelines', label: 'Pipelines & Plumbing', icon: Droplets, countLabel: 'HDPE, UPVC, CPVC' },
-  { id: 'taps', label: 'Taps & Sanitary Fixtures', icon: Sparkles, countLabel: 'Jaquar, Kohler, EWCs' },
-  { id: 'tiles', label: 'Tiles & Marble Slabs', icon: Grid, countLabel: 'Kajaria, Statuario, Granite' },
-  { id: 'boards', label: 'Boards, Plywood & Cardboards', icon: Box, countLabel: 'Floor Shield, Gyproc, Ply' },
-  { id: 'structural', label: 'Structural Steel & Cement', icon: Building2, countLabel: 'Tata TMT 550D, UltraTech' },
-  { id: 'paints', label: 'Paints & Waterproofing', icon: Paintbrush, countLabel: 'Dr. Fixit, Royale' },
-  { id: 'electrical', label: 'Electrical & Conduits', icon: Zap, countLabel: 'Polycab FRLS, Legrand' },
-  { id: 'hardware', label: 'Hardware & Site Tools', icon: Hammer, countLabel: 'Godrej Locks, Bosch Laser' }
+  { id: 'all', label: 'All Products', icon: Layers, countLabel: '30 Real Items' },
+  { id: 'ceiling', label: 'Ceiling', icon: Box, countLabel: 'Gypsum, POP, Fluted & Panels' },
+  { id: 'wall-paneling', label: 'Wall Paneling', icon: Grid, countLabel: 'Polygranite, WPC, Putty & Paint' },
+  { id: 'flooring', label: 'Flooring', icon: Sparkles, countLabel: 'Kajaria Tiles, Italian Marble, Granite' },
+  { id: 'electrical', label: 'Electrical', icon: Zap, countLabel: 'Copper Wiring, MCB Boards, Switches' },
+  { id: 'cctv', label: 'CCTV & Security', icon: ShieldCheck, countLabel: 'DVR, NVR, 4G, Solar & Wired Cams' },
+  { id: 'plumbing', label: 'Plumbing', icon: Droplets, countLabel: 'Sinks, Taps, Pipes, Commodes' }
 ];
 
 const CATEGORY_BANNERS = {
   all: {
-    title: 'Complete Construction Materials & Pipeline Supplies Hub',
-    desc: 'Direct factory procurement for builders, contractors, and architects across Telangana. NABL certified steel, Italian marble, premium taps, floor protection cardboards, and HDPE pipelines.'
+    title: 'Real Market Price Building Supplies & Security Hub',
+    desc: 'Direct factory & distributor procurement for Ceiling, Wall Paneling, Flooring, Electrical, CCTV Surveillance, and Plumbing across Telangana. 100% genuine products with transparent market pricing.'
   },
-  pipelines: {
-    title: 'Heavy Civil Pipelines, Pressure Pipes & Storage Solutions',
-    desc: 'Supreme HDPE SDR-11 water pipes, Finolex UPVC SWR drainage systems, Astral CPVC FlowGuard hot/cold lines, and Spun Hume RCC culverts with NABL pressure testing.'
+  ceiling: {
+    title: 'Ceiling Materials: Gypsum, POP, Waterproof PVC & GI Framing',
+    desc: 'Saint-Gobain Gyproc false ceiling boards, Sakarni super-fine POP bags, 100% waterproof PVC fluted ceiling panels, Aerolite mineral acoustic tiles, and heavy-gauge galvanized iron channels.'
   },
-  taps: {
-    title: 'Designer Taps, Faucets & Luxury Sanitary Ware',
-    desc: 'Jaquar forged brass basin mixers, Kohler 3-in-1 shower systems, Hindware rimless dual-flush western toilets, touchless infrared commercial taps, and 304 SS kitchen sinks.'
+  'wall-paneling': {
+    title: 'Wall Paneling: WPC Fluted Louvers, Polygranite & Putty',
+    desc: 'Exterior/interior heavy-duty WPC fluted louvers, 8x4ft high-gloss Polygranite marble sheets, Italian Statuario acrylic panels, and Birla White putty paired with Asian Paints Royale.'
   },
-  tiles: {
-    title: 'Vitrified Tiles, Statuario Slabs & Imported Italian Marble',
-    desc: 'Kajaria 600x1200mm double-charge vitrified tiles, Somany 800x1600mm book-matched Statuario slabs, Brescia Italian Botticino marble, Black Galaxy granite, and anti-skid ceramic floor tiles.'
-  },
-  boards: {
-    title: 'Floor Protection Cardboards, Gypsum Boards & Marine Plywood',
-    desc: 'AMK 300 GSM heavy-duty corrugated floor protection rolls to safeguard polished marble, Saint-Gobain Gyproc false ceiling boards, CenturyPly 710 BWP marine plywood, and Action TESA HDHMR boards.'
-  },
-  structural: {
-    title: 'Primary Structural Steel, High-Grade Cement & M-Sand',
-    desc: 'Tata Tiscon Fe-550D Super Ductile TMT rebars, UltraTech 53 Grade high-strength cement, Birla A1 Super PPC, and hydro-cyclone triple-washed robo M-sand with lab weighbridge certificates.'
-  },
-  paints: {
-    title: 'Advanced Waterproofing Polymers & Luxury Architectural Paints',
-    desc: 'Dr. Fixit DampGuard PU liquid membrane with 300% elongation, Asian Paints Royale luxury interior emulsion with Teflon stain shield, Apex Ultima all-weather exterior shield, and Birla White putty.'
+  flooring: {
+    title: 'Flooring: Kajaria Vitrified Tiles, Italian Marble & Black Galaxy Granite',
+    desc: 'Kajaria 600x1200mm double-charge vitrified floor tiles, authentic imported Italian Statuario/Botticino marble slabs, and 18mm high-gloss South Indian Black Galaxy granite.'
   },
   electrical: {
-    title: 'Pure Copper Electrical Wires, Conduits & Smart Modular Plates',
-    desc: 'Polycab 99.97% bright annealed copper FRLS wires (2.5mm & 4.0mm), Legrand Mylinc touch plates, Schneider Electric distribution boards, and heavy-duty rigid PVC conduit pipes.'
+    title: 'Electrical: Pure Copper Wires, Power Distribution & Modular Switches',
+    desc: 'Polycab 99.97% bright annealed copper FRLS house wiring, Schneider Electric IP43 SPN distribution MCB boards, and Legrand Mylinc modular switches and child-safe shuttered sockets.'
   },
-  hardware: {
-    title: 'High-Security Door Locks, Precision Laser Tools & PPE Safety Gear',
-    desc: 'Godrej forged brass mortise entrance locks, Yale biometric smart digital door locks, Bosch 100m laser distance meters with Bluetooth, and DGMS-compliant site safety helmet & steel-toe boot kits.'
+  cctv: {
+    title: 'CCTV Security: DVR, 4K NVR, Wired (4 to 64 Ch), 4G SIM & Solar Cameras',
+    desc: 'Hikvision & CP PLUS 5MP/4K Turbo HD DVRs, 16-Ch PoE NVRs, wired commercial camera packages (4, 8, 16, 32 & 64 Channels), 360° 4G SIM Wi-Fi cameras, standalone solar PTZ cams, and office counter audio cameras.'
+  },
+  plumbing: {
+    title: 'Plumbing & Sanitary: Sinks, Brass Taps, CPVC/HDPE Pipes & Commodes',
+    desc: 'Franke/Nirali 304 SS & Quartz kitchen sinks, Jaquar single-lever brass mixers, Astral CPVC / Finolex UPVC / Supreme HDPE pressure pipes, and Hindware rimless wall-hung soft-close western toilets.'
   }
 };
 

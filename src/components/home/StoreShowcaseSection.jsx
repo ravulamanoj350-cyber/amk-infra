@@ -24,68 +24,52 @@ import {
 
 const STORE_CATEGORY_PREVIEWS = [
   {
-    id: 'pipelines',
-    title: 'Pipelines & Plumbing',
-    desc: 'HDPE, UPVC SWR, CPVC & Hume Pipes',
-    icon: Droplets,
-    badge: 'ISI / NABL',
-    color: 'from-blue-500/20 to-blue-600/10 border-blue-500/30 text-blue-400'
-  },
-  {
-    id: 'taps',
-    title: 'Taps & Sanitary Fixtures',
-    desc: 'Jaquar Mixers, Sensor Taps & EWCs',
-    icon: Sparkles,
-    badge: '10-Yr Warranty',
+    id: 'ceiling',
+    title: 'Ceiling',
+    desc: 'Gypsum, POP, Fluted & Panels',
+    icon: Box,
+    badge: 'Fire Rated',
     color: 'from-amber-500/20 to-amber-600/10 border-amber-500/30 text-amber-400'
   },
   {
-    id: 'tiles',
-    title: 'Tiles & Marble Slabs',
-    desc: 'Kajaria 600x1200, Statuario & Granite',
+    id: 'wall-paneling',
+    title: 'Wall Paneling',
+    desc: 'WPC Louvers, Polygranite & Putty',
     icon: Grid,
+    badge: '100% Waterproof',
+    color: 'from-orange-500/20 to-orange-600/10 border-orange-500/30 text-orange-400'
+  },
+  {
+    id: 'flooring',
+    title: 'Flooring',
+    desc: 'Kajaria Tiles, Italian Marble, Granite',
+    icon: Sparkles,
     badge: 'Book-Match Slabs',
     color: 'from-emerald-500/20 to-emerald-600/10 border-emerald-500/30 text-emerald-400'
   },
   {
-    id: 'boards',
-    title: 'Cardboard Rolls & Plywood',
-    desc: '300 GSM Floor Shield, Gyproc & BWP Ply',
-    icon: Box,
-    badge: 'Floor Protection',
-    color: 'from-orange-500/20 to-orange-600/10 border-orange-500/30 text-orange-400'
-  },
-  {
-    id: 'structural',
-    title: 'Structural Steel & Cement',
-    desc: 'Tata Tiscon 550D TMT & UltraTech 53G',
-    icon: Building2,
-    badge: 'Mill Certified',
-    color: 'from-indigo-500/20 to-indigo-600/10 border-indigo-500/30 text-indigo-400'
-  },
-  {
-    id: 'paints',
-    title: 'Paints & Waterproofing',
-    desc: 'Dr. Fixit DampGuard & Asian Paints Royale',
-    icon: Paintbrush,
-    badge: 'Teflon Coating',
-    color: 'from-purple-500/20 to-purple-600/10 border-purple-500/30 text-purple-400'
-  },
-  {
     id: 'electrical',
-    title: 'Electrical & Conduits',
-    desc: 'Polycab FRLS Wires & Legrand Switches',
+    title: 'Electrical',
+    desc: 'Polycab Wire, MCB Boards & Switches',
     icon: Zap,
-    badge: '100% Copper',
+    badge: '100% Pure Copper',
     color: 'from-yellow-500/20 to-yellow-600/10 border-yellow-500/30 text-yellow-400'
   },
   {
-    id: 'hardware',
-    title: 'Hardware & Site Tools',
-    desc: 'Godrej Locks, Bosch Laser & PPE Kits',
-    icon: Hammer,
-    badge: 'OSHA / DGMS',
-    color: 'from-rose-500/20 to-rose-600/10 border-rose-500/30 text-rose-400'
+    id: 'cctv',
+    title: 'CCTV Security',
+    desc: 'DVR, NVR, Wired (4-64Ch), Solar & 4G',
+    icon: ShieldCheck,
+    badge: 'AI Smart Detect',
+    color: 'from-blue-500/20 to-blue-600/10 border-blue-500/30 text-blue-400'
+  },
+  {
+    id: 'plumbing',
+    title: 'Plumbing',
+    desc: 'SS Sinks, Jaquar Taps, Pipes & EWCs',
+    icon: Droplets,
+    badge: '10-Yr Warranty',
+    color: 'from-cyan-500/20 to-cyan-600/10 border-cyan-500/30 text-cyan-400'
   }
 ];
 
